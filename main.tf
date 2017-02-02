@@ -161,7 +161,8 @@ resource "azurerm_network_security_rule" "inbound-ssh" {
 }
 
 resource "azurerm_storage_account" "es" {
-  name                = "${var.resource_name_prefix}sys1329"
+  count               = "${var.nodes}"
+  name                = "${var.resource_name_prefix}sys${count.index}"
   resource_group_name = "${azurerm_resource_group.es.name}"
   location            = "${var.location}"
   account_type        = "${var.storage_account_type}"
@@ -174,7 +175,7 @@ resource "azurerm_storage_account" "es" {
 resource "azurerm_storage_container" "es" {
   name                  = "vhds"
   resource_group_name   = "${azurerm_resource_group.es.name}"
-  storage_account_name  = "${azurerm_storage_account.es.name}"
+  storage_account_name  = "${element(azurerm_storage_account.es.*.name, count.index)}"
   container_access_type = "private"
 }
 
@@ -203,7 +204,7 @@ resource "azurerm_virtual_machine" "es" {
 
   storage_os_disk {
     name          = "eventstorenode${count.index}osdisk1"
-    vhd_uri       = "${azurerm_storage_account.es.primary_blob_endpoint}${azurerm_storage_container.es.name}/eventstorenode${count.index}osdisk1.vhd"
+    vhd_uri       = "${element(azurerm_storage_account.es.*.primary_blob_endpoint, count.index)}${element(azurerm_storage_container.es.*.name, count.index)}/eventstorenode${count.index}osdisk1.vhd"
     caching       = "ReadWrite"
     create_option = "FromImage"
   }
