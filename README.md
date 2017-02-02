@@ -2,28 +2,7 @@
 
 This [Terraform](https://www.terraform.io) plan spins up a multi-node [EventStore](https://geteventstore.com) cluster on Ubuntu Linux VMs in Microsoft Azure.
 
-## Variables
-
-- **resource_name_prefix** - will be applied to all resource names and identifiers
-- **subscription_id**, **client_id**, **client_secret**, **tenant_id** - your Azure credentials [how to obtain them](https://www.terraform.io/docs/providers/azurerm/index.html#creating-credentials)
-- **location** - The Azure region to run in, e.g. `northeurope`
-- **vmusername**, **vmuserpassword** - The Linux login credentials
-- **nodes** - The number of EventStore nodes to create. Must be an odd number, probably 3 or 5.
-- **vm_size** - The Azure VM size. I suggest [Ds*X*_V2](https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-linux-sizes#dsv2-series) as a minimum.
-- **storage_account_type** - Type of Azure Storage account to create for VM disks. You should use [Premium Storage](https://docs.microsoft.com/en-us/azure/storage/storage-premium-storage) for busy production systems.
-
-## Files
-
-- The `ssh` folder must contain the `id_rsa` (private key) and `id_rsa.pub` (public key) that will be used to secure the Linux VMs. **DO NOT** check these into source control.
-- The `scripts` folder contains: 
-  - The `install.sh` script which is a slightly modified version of the one from packagecloud to set up the EventStore `apt` repos and install `eventstore-oss`.
-  - The `configure.sh` script which writes the `eventstore.conf` file with the cluster gossip seeds and starts EventStore. If you want to make further changes to the configuration, just edit the "here document" in this script.
-- `main.tf` is the Terraform plan, obviously
-- `terraform.tfvars` is where you should put the credentials variables. **DO NOT** check this into source control.
-
-**Because this is a template/example repo, I have not added `terraform.tfvars` or `ssh` to the `.gitignore`. Remember to add them before commiting your own code.**
-
-## Details ##
+## Details 
 
 The Terraform plan creates:
 
@@ -37,6 +16,27 @@ The Terraform plan creates:
 After creation of the VMs, it runs `install.sh`, then `configure.sh`, after which you should be able to access the Web UI via
 `http://your-resource-name-lb.your-location.cloudapp.azure.com:2114`, logging in with the default `admin`/`changeit` credentials,
 which you should then obviously immediately change.
+
+### Variables
+
+- **resource_name_prefix** - will be applied to all resource names and identifiers
+- **subscription_id**, **client_id**, **client_secret**, **tenant_id** - your Azure credentials ([how to obtain them](https://www.terraform.io/docs/providers/azurerm/index.html#creating-credentials))
+- **location** - The Azure region to run in, e.g. `northeurope`
+- **vmusername**, **vmuserpassword** - The Linux login credentials
+- **nodes** - The number of EventStore nodes to create. Must be an odd number, probably 3 or 5.
+- **vm_size** - The Azure VM size. I suggest [Ds*X*_V2](https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-linux-sizes#dsv2-series) as a minimum.
+- **storage_account_type** - Type of Azure Storage account to create for VM disks. You should use [Premium Storage](https://docs.microsoft.com/en-us/azure/storage/storage-premium-storage) for busy production systems.
+
+### Files
+
+- The `ssh` folder must contain the `id_rsa` (private key) and `id_rsa.pub` (public key) that will be used to secure the Linux VMs. **DO NOT** check these into source control.
+- The `scripts` folder contains: 
+  - The `install.sh` script which is a slightly modified version of the one from packagecloud to set up the EventStore `apt` repos and install `eventstore-oss`.
+  - The `configure.sh` script which writes the `eventstore.conf` file with the cluster gossip seeds and starts EventStore. If you want to make further changes to the configuration, just edit the "here document" in this script.
+- `main.tf` is the Terraform plan, obviously
+- `terraform.tfvars` is where you should put the credentials variables. **DO NOT** check this into source control.
+
+**Because this is a template/example repo, I have not added `terraform.tfvars` or `ssh` to the `.gitignore`. Remember to add them before commiting your own code.**
 
 ## Notes
 
