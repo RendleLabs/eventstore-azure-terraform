@@ -1,0 +1,5 @@
+# Uncomment the lines below before commiting your code.
+
+#terraform.tfvars
+
+#ssh/
