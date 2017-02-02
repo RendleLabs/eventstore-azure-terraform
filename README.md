@@ -5,7 +5,7 @@ This [Terraform](https://www.terraform.io) plan spins up a multi-node [EventStor
 ## Variables
 
 - **resource_name_prefix** - will be applied to all resource names and identifiers
-- **subscription_id**, **client_id**, **client_secret**, **tenant_id** - your Azure credentials [how to obtain them](https://www.terraform.io/docs/providers/azurerm/index.html#creating-credentials)
+- **subscription_id**, **client_id**, **client_secret**, **tenant_id** - your Azure credentials ([how to obtain them](https://www.terraform.io/docs/providers/azurerm/index.html#creating-credentials))
 - **location** - The Azure region to run in, e.g. `northeurope`
 - **vmusername**, **vmuserpassword** - The Linux login credentials
 - **nodes** - The number of EventStore nodes to create. Must be an odd number, probably 3 or 5.
