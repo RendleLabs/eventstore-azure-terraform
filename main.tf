@@ -19,11 +19,15 @@ variable "nodes" {
 }
 
 variable "vm_size" {
-  default = "Standard_D1_v2"
+  default = "Standard_D2_v2"
 }
 
-variable "storage_account_type" {
-  default = "Standard_LRS"
+variable "storage_account_tier" {
+  default = "Standard"
+}
+
+variable "storage_account_replication_type" {
+  default = "LRS"
 }
 
 variable "lb_backend_pool_name" {
@@ -89,7 +93,6 @@ resource "azurerm_lb" "es" {
 }
 
 resource "azurerm_lb_backend_address_pool" "es" {
-  location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.es.name}"
   loadbalancer_id     = "${azurerm_lb.es.id}"
   name                = "${var.lb_backend_pool_name}"
@@ -161,11 +164,12 @@ resource "azurerm_network_security_rule" "inbound-ssh" {
 }
 
 resource "azurerm_storage_account" "es" {
-  count               = "${var.nodes}"
-  name                = "${var.resource_name_prefix}sys${count.index}"
-  resource_group_name = "${azurerm_resource_group.es.name}"
-  location            = "${var.location}"
-  account_type        = "${var.storage_account_type}"
+  count                    = "${var.nodes}"
+  name                     = "${var.resource_name_prefix}sys${count.index}"
+  resource_group_name      = "${azurerm_resource_group.es.name}"
+  location                 = "${var.location}"
+  account_tier             = "${var.storage_account_tier}"
+  account_replication_type = "${var.storage_account_replication_type}"
 
   tags {
     environment = "production"
@@ -219,7 +223,7 @@ resource "azurerm_virtual_machine" "es" {
     disable_password_authentication = true
 
     ssh_keys {
-      path     = "/home/${var.vmusername}/ssh/authorized_keys"
+      path     = "/home/${var.vmusername}/.ssh/authorized_keys"
       key_data = "${file("ssh/id_rsa.pub")}"
     }
   }
@@ -268,7 +272,6 @@ resource "azurerm_virtual_machine" "es" {
 
 resource "azurerm_lb_probe" "es" {
   depends_on          = ["azurerm_virtual_machine.es"]
-  location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.es.name}"
   loadbalancer_id     = "${azurerm_lb.es.id}"
   name                = "${var.lb_probe_name}"
@@ -278,7 +281,6 @@ resource "azurerm_lb_probe" "es" {
 
 resource "azurerm_lb_rule" "es-http" {
   depends_on                     = ["azurerm_lb_probe.es"]
-  location                       = "${var.location}"
   resource_group_name            = "${azurerm_resource_group.es.name}"
   loadbalancer_id                = "${azurerm_lb.es.id}"
   name                           = "eventstore-http"
@@ -292,7 +294,6 @@ resource "azurerm_lb_rule" "es-http" {
 
 resource "azurerm_lb_rule" "es-tcp" {
   depends_on                     = ["azurerm_lb_probe.es"]
-  location                       = "${var.location}"
   resource_group_name            = "${azurerm_resource_group.es.name}"
   loadbalancer_id                = "${azurerm_lb.es.id}"
   name                           = "eventstore-tcp"
