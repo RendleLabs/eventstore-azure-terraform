@@ -1,6 +1,6 @@
 # EventStore on Azure with Terraform
 
-This [Terraform](https://www.terraform.io) plan spins up a multi-node [EventStore](https://geteventstore.com) cluster on Ubuntu Linux VMs in Microsoft Azure.
+This [Terraform](https://www.terraform.io) plan spins up a multi-node [EventStore](https://eventstore.org) cluster on Ubuntu Linux VMs in Microsoft Azure.
 
 ## Details 
 
